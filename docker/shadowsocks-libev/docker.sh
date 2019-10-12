@@ -20,7 +20,7 @@ install_docker(){
     else
         yum-config-manager --add-repo https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
         yum makecache fast
-        yum install --nobest docker-ce -y
+        yum install docker-ce -y
         systemctl enable docker
         systemctl start docker
     fi
@@ -38,12 +38,15 @@ run_docker(){
 	"method": "chacha20-ietf-poly1305",
 	"fast_open": true,
 	"nameserver": "8.8.8.8",
-	"mode": "tcp_and_udp"
+	"mode": "tcp_and_udp",
+    "plugin": "obfs-server",
+    "plugin_opts": "obfs=tls"
 }
 EOF
     
+	instance_name="ss-libev-${shadowsocksport}"
 	docker rm -f ss-libev > /dev/null 2>&1
-    docker run -d -p ${shadowsocksport}:${shadowsocksport} -p ${shadowsocksport}:${shadowsocksport}/udp --restart=always --name ss-libev -v /etc/shadowsocks-libev:/etc/shadowsocks-libev teddysun/shadowsocks-libev
+    docker run -d -p ${shadowsocksport}:${shadowsocksport} -p ${shadowsocksport}:${shadowsocksport}/udp --restart=always --name ${instance_name} -v /etc/shadowsocks-libev:/etc/shadowsocks-libev teddysun/shadowsocks-libev
 }
 
 format_parameters(){
